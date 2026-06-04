@@ -27,6 +27,8 @@ layout = [
     [
         sg.Text('increasing steps: ', visible=False),
         sg.Input(key='input_interval', default_text="1", visible=False),
+        sg.Text('delay: ', visible=False),
+        sg.Input(key='input_delay', default_text="0.05", visible=False),
         sg.Text('Filepath: ', visible=False),
         sg.Input(key='input_file', default_text="/sys/devices/platform/tuxedo_keyboard/leds/rgb:kbd_backlight/multi_intensity", visible=False),
         sg.FileBrowse(target='input_file', visible=False),
@@ -35,7 +37,7 @@ layout = [
     [sg.Button("OK")]
 ]
 
-window = sg.Window("Color Picker", layout)
+window = sg.Window("Keyboard RGB Controller", layout)
 color = [255, 255, 255]
 
 while True:
@@ -56,7 +58,12 @@ while True:
             except ValueError:
                 interval = 1
 
-            command = f"/usr/bin/python3 {script_dir}/effects.py --interval {interval}"
+            try:
+                delay = float(values['input_delay'])
+            except ValueError:
+                delay = 0.05
+
+            command = f"/usr/bin/python3 {script_dir}/effects.py --interval {interval} --delay {delay}"
 
             file = Path(values['input_file'])
             if file.is_file():
